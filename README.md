@@ -10,15 +10,13 @@ Whatsapp: 31 984052336
 
 ## Compilando no Linux
 
-Requer Debian 12 ou 13
+1. Requer Debian 12 ou 13
+2. Baixe esse projeto e coloque-o em /root/n8n-builder/
+3. Rodar o script run-default-builder.sh para construir no padrao da N8N
+4. Recomendavel subir RamDisk na pasta /opt/homebrew/
+5. Para iniciar, lei o script **run-default-builder.sh**
 
-Rodar o script run-default-builder.sh para construir no padrao da N8N
-
-Recomendavel subir RamDisk na pasta /opt/homebrew/
-
-Para iniciar, lei o script **run-default-builder.sh**
-
-Execute para começar:
+## Compilando N8N
 ```bash
 
     export N8N_VERSION="1.122.4"; echo "$N8N_VERSION" > /tmp/.n8n-version;
