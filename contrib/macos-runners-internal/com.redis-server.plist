@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.redis-server</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/redis-server</string>
+        <string>--bind '0.0.0.0 ::'</string>
+        <string>--port 6379</string>
+        <string>--set-proc-title no</string>
+        <string>--tcp-backlog 8192</string>
+        <string>--tcp-keepalive 30</string>
+        <string>--timeout 0</string>
+        <string>--save 900 1</string>
+        <string>--save 300 10</string>
+        <string>--save 60 10000</string>
+        <string>--dir /opt/homebrew/var/db/redis/</string>
+        <string>--rdbcompression no</string>
+        <string>--rdbchecksum yes</string>
+        <string>--dbfilename data.rdb</string>
+        <string>--appendonly yes</string>
+        <string>--appendfsync everysec</string>
+        <string>--appendfilename data.aof</string>
+    </array>
+
+    <key>WorkingDirectory</key> <string>/opt/homebrew/var/db/redis</string>
+    
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>TZ</key><string>America/Sao_Paulo</string>
+    </dict>
+
+    <key>RunAtLoad</key> <true/>
+    
+    <key>KeepAlive</key> <true/>
+    
+    <key>StandardOutPath</key> <string>/tmp/redis-server-stdout.log</string>
+    <key>StandardErrorPath</key> <string>/tmp/redis-server-error.log</string>
+</dict>
+</plist>

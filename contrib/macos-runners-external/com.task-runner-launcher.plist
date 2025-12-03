@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.task-runner-launcher</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/n8n-app/runners/task-runner-launcher</string>
+        <string>javascript</string>
+        <string>python</string>
+    </array>
+
+    <key>WorkingDirectory</key> <string>/opt/homebrew/n8n-app/runners</string>
+    <key>RunAtLoad</key> <true/>
+    <key>KeepAlive</key> <true/>
+    <key>StandardOutPath</key> <string>/tmp/task-runner-launcher-stdout.log</string>
+    <key>StandardErrorPath</key> <string>/tmp/task-runner-launcher-error.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>N8N_RUNNERS_AUTH_TOKEN</key><string>tulipa</string>
+        <key>N8N_RUNNERS_MAX_CONCURRENCY</key><string>32</string>
+        <key>N8N_RUNNERS_LAUNCHER_HEALTH_CHECK_PORT</key><string>5588</string>
+        <key>N8N_RUNNERS_TASK_BROKER_URI</key><string>http://127.0.0.1:5679</string>
+        <key>N8N_RUNNERS_LAUNCHER_LOG_LEVEL</key><string>info</string>
+    </dict>
+    </dict>
+</plist>

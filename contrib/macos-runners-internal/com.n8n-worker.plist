@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.n8n-worker</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/node</string>
+        <string>/opt/homebrew/n8n-app/bin/n8n</string>
+        <string>worker</string> <string>--concurrency=32</string>
+    </array>
+
+    <key>WorkingDirectory</key> <string>/opt/homebrew</string>
+    <key>RunAtLoad</key> <true/>
+    <key>KeepAlive</key> <true/>
+    <key>StandardOutPath</key> <string>/tmp/n8n-worker-stdout.log</string>
+    <key>StandardErrorPath</key> <string>/tmp/n8n-worker-error.log</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>N8N_RUNNERS_ENABLED</key><string>true</string>
+        <key>N8N_RUNNERS_MODE</key><string>internal</string>
+        <key>N8N_RUNNERS_AUTH_TOKEN</key><string>tulipa</string>
+        <key>N8N_RUNNERS_MAX_CONCURRENCY</key><string>32</string>
+        <key>N8N_RUNNERS_BROKER_PORT</key><string>5679</string>
+        <key>N8N_RUNNERS_TASK_TIMEOUT</key><string>300</string>
+        <key>N8N_RUNNERS_HEARTBEAT_INTERVAL</key><string>30</string>
+        <key>N8N_RUNNERS_INSECURE_MODE</key><string>false</string>
+        <key>N8N_RUNNERS_TASK_REQUEST_TIMEOUT</key><string>20</string>
+        <key>N8N_RUNNERS_PATH</key><string>/runners</string>
+
+        <key>N8N_PORT</key>                   <string>5500</string>
+        <key>NODE_ENV</key>                   <string>production</string>
+        <key>N8N_BASE_URL</key>               <string>http://localhost:5780</string>
+
+        <key>N8N_RELEASE_TYPE</key> <string>stable</string>
+
+        <key>N8N_DIAGNOSTICS_ENABLED</key>          <string>false</string>
+        <key>N8N_BLOCK_ENV_ACCESS_IN_NODE</key>     <string>false</string>
+        <key>N8N_GIT_NODE_DISABLE_BARE_REPOS</key>  <string>true</string>
+
+        <key>N8N_USER_FOLDER</key> <string>/opt/homebrew/n8n-data</string>
+        <key>N8N_CUSTOM_EXTENSIONS</key><string>/opt/homebrew/n8n-nodes</string>
+        <key>N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE</key> <string>true</string>
+        <key>N8N_COMMUNITY_PACKAGES_ENABLED</key> <string>true</string>
+        <key>N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS</key> <string>true</string>
+
+        <key>EXECUTIONS_MODE</key>             <string>queue</string>
+        <key>N8N_ENCRYPTION_KEY</key>          <string>tulipa</string>
+        <key>TZ</key>                          <string>America/Sao_Paulo</string>
+        <key>GENERIC_TIMEZONE</key>            <string>America/Sao_Paulo</string>
+        <key>DB_TYPE</key>                     <string>postgresdb</string>
+        <key>DB_POSTGRESDB_HOST</key>          <string>localhost</string>
+        <key>DB_POSTGRESDB_PORT</key>          <string>5432</string>
+        <key>DB_POSTGRESDB_USER</key>          <string>n8n_local_user</string>
+        <key>DB_POSTGRESDB_PASSWORD</key>      <string>n8nsql2025</string>
+        <key>DB_POSTGRESDB_DATABASE</key>      <string>n8n_local_db</string>
+        <key>DB_POSTGRESDB_SCHEMA</key>        <string>public</string>
+        <key>QUEUE_BULL_REDIS_HOST</key>       <string>localhost</string>
+        <key>QUEUE_BULL_REDIS_PORT</key>       <string>6379</string>
+        <key>QUEUE_BULL_REDIS_DB</key>         <string>8</string>
+        <key>QUEUE_BULL_REDIS_DUALSTACK</key>  <string>true</string>
+        <key>QUEUE_HEALTH_CHECK_ACTIVE</key>   <string>true</string>
+
+        <key>EXECUTIONS_TIMEOUT</key>                     <string>1800</string>
+        <key>EXECUTIONS_TIMEOUT_MAX</key>                 <string>1800</string>
+        <key>EXECUTIONS_DATA_PRUNE</key>                  <string>true</string>
+        <key>EXECUTIONS_DATA_MAX_AGE</key>                <string>336</string>
+        <key>EXECUTIONS_DATA_PRUNE_MAX_COUNT</key>        <string>2048</string>
+        <key>EXECUTIONS_DATA_PRUNE_HARD_DELETE_INTERVAL</key> <string>15</string>
+        <key>EXECUTIONS_DATA_PRUNE_SOFT_DELETE_INTERVAL</key> <string>60</string>
+        <key>EXECUTIONS_DATA_SAVE_ON_ERROR</key>          <string>all</string>
+        <key>EXECUTIONS_DATA_SAVE_ON_SUCCESS</key>        <string>all</string>
+        <key>EXECUTIONS_DATA_SAVE_ON_PROGRESS</key>       <string>true</string>
+        <key>EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS</key> <string>true</string>
+        <key>OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS</key>   <string>true</string>
+    </dict>
+</dict>
+</plist>
+
