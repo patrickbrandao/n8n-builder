@@ -1,0 +1,176 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        -224
+      ],
+      "id": "76939cf3-2964-4f47-a8f3-906b2e6659e2",
+      "name": "CLICK"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        -32
+      ],
+      "id": "7b2904ec-8040-4317-909d-20b603a87478",
+      "name": "NOOP"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1008,
+        160
+      ],
+      "id": "cdce6664-aa23-4c49-8a5a-e57b51595dc3",
+      "name": "SCHED-1MIN"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) item.json.myNewField = 1;\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        -128
+      ],
+      "id": "e0e3fd9f-642c-4075-aadf-90003d542d01",
+      "name": "CODE-JS-01"
+    },
+    {
+      "parameters": {
+        "path": "test01",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1008,
+        -32
+      ],
+      "id": "87faee4d-2532-4b60-8839-d7b0898d1845",
+      "name": "WS01",
+      "webhookId": "8026f209-f940-4fd4-81f7-d950b50e76ea"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        -32
+      ],
+      "id": "4008ac2a-72ba-4b64-ab05-581a70d96a5b",
+      "name": "NOOP-END"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "for item in _input.all():\n  item.json.myNewField = 1\nreturn _input.all()"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        64
+      ],
+      "id": "b369574a-024a-42e6-b192-8911c1d30386",
+      "name": "CODE-PY-01"
+    }
+  ],
+  "connections": {
+    "CLICK": {
+      "main": [
+        [
+          {
+            "node": "NOOP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NOOP": {
+      "main": [
+        [
+          {
+            "node": "CODE-JS-01",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "CODE-PY-01",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SCHED-1MIN": {
+      "main": [
+        [
+          {
+            "node": "NOOP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CODE-JS-01": {
+      "main": [
+        [
+          {
+            "node": "NOOP-END",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WS01": {
+      "main": [
+        [
+          {
+            "node": "NOOP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CODE-PY-01": {
+      "main": [
+        [
+          {
+            "node": "NOOP-END",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "eef8858867d54d2f3abebf589b9cc279bd64868bfd8a5c3f37c75735958ebf47"
+  }
+}
