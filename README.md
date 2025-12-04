@@ -24,7 +24,7 @@ Whatsapp: 31 984052336
     # Tipo de compilacao (separa versoes de teste, oficial e personalizadas)
     export RELEASE="private"; echo "$RELEASE" > /tmp/.release;
 
-	sh run-default-builder.sh;
+	sh /root/n8n-builder/run-default-builder.sh;
 
 ```
 
