@@ -13,7 +13,7 @@ Whatsapp: 31 984052336
 1. Requer Debian 12 ou 13
 2. Baixe esse projeto e coloque-o em /root/n8n-builder/
 3. Rodar o script run-default-builder.sh para construir no padrao da N8N
-4. Recomendavel subir RamDisk na pasta /opt/homebrew/
+4. Recomendavel subir RamDisk na pasta /opt/homebrew/, precisa ter pelo menos 24G de RAM, rodar o script: utils/install-ramdisk-service.sh
 5. Para iniciar, lei o script **run-default-builder.sh**
 
 ## Compilando N8N
