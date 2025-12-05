@@ -4,13 +4,29 @@
 # - Definir versao do N8N  
 
     # Obter versao atual em https://github.com/n8n-io/n8n/releases
-    #export N8N_VERSION="1.122.4"; echo "$N8N_VERSION" > /tmp/.n8n-version;
+    #export N8N_VERSION="1.122.5"; echo "$N8N_VERSION" > /tmp/.n8n-version;
     #export N8N_VERSION="v2"; echo "$N8N_VERSION" > /tmp/.n8n-version;
 
     # Tipo de compilacao (separa versoes de teste, oficial e personalizadas)
     #export RELEASE="private"; echo "$RELEASE" > /tmp/.release;
     #export RELEASE="stable";  echo "$RELEASE" > /tmp/.release;
     #export RELEASE="test";    echo "$RELEASE" > /tmp/.release;
+
+    # Versao e release default
+    [ -f "/tmp/.n8n-version" ] || {
+        export N8N_VERSION="1.122.5";
+        echo "$N8N_VERSION" > /tmp/.n8n-version;
+        echo "# *** Definindo versao padrao: $N8N_VERSION";
+    };
+    [ -f "/tmp/.release" ] || {
+        export RELEASE="private";
+        echo "$RELEASE" > /tmp/.release;
+        echo "# *** Definindo release padrao: $RELEASE";
+    };
+    echo;
+    echo "# *** Iniciando com versao $(head -1 /tmp/.n8n-version) e release $(head -1 /tmp/.release)";
+    echo;
+    sleep 1;
 
     # Incluir biblioteca de funcoes e variaveis
     echo;
