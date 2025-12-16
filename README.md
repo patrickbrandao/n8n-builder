@@ -38,3 +38,58 @@ docker image ls | grep runners;
 
 ```
 
+## Rodando com imagem especifica
+
+```bash
+
+cd /root/n8n-builder/tests;
+
+/root/n8n-builder/tests/setup-211-tapi-workers-internal.sh      n8n-private:1.123.5 n8n-runners-private-default:1.123.5;
+/root/n8n-builder/tests/setup-221-tapi-workers-runners.sh       n8n-private:1.123.5 n8n-runners-private-default:1.123.5;
+/root/n8n-builder/tests/setup-231-tapi-workers-runners-split.sh n8n-private:1.123.5 n8n-runners-private-default:1.123.5;
+
+
+/root/n8n-builder/tests/setup-211-tapi-workers-internal.sh      n8n-private:2.0.0 n8n-runners-private-default:2.0.0;
+/root/n8n-builder/tests/setup-221-tapi-workers-runners.sh       n8n-private:2.0.0 n8n-runners-private-default:2.0.0;
+
+
+/root/n8n-builder/tests/setup-231-tapi-workers-runners-split.sh n8n-private:2.0.0 n8n-runners-private-default:2.0.0;
+/root/n8n-builder/tests/setup-241-tapi-dual-workers-runners.sh  n8n-private:2.0.0 n8n-runners-private-default:2.0.0;
+
+
+/root/n8n-builder/tests/setup-211-tapi-workers-internal.sh      n8n-private:2.0.1 n8n-runners-private-default:2.0.1;
+/root/n8n-builder/tests/setup-221-tapi-workers-runners.sh       n8n-private:2.0.1 n8n-runners-private-default:2.0.1;
+
+
+/root/n8n-builder/tests/setup-231-tapi-workers-runners-split.sh n8n-private:2.0.1 n8n-runners-private-default:2.0.1;
+
+
+/root/n8n-builder/tests/setup-241-tapi-dual-workers-runners.sh  n8n-test:2.0.2      n8n-runners-test-default:2.0.2;
+/root/n8n-builder/tests/setup-241-tapi-dual-workers-runners.sh  n8n-private:2.0.2   n8n-runners-private-default:2.0.2;
+
+
+/root/n8n-builder/tests/setup-251-v2-workers.sh                  n8n-test:2.0.2     n8n-runners-test-default:2.0.2;
+/root/n8n-builder/tests/setup-251-v2-workers.sh                  n8n-private:2.0.2  n8n-runners-private-default:2.0.2;
+
+/root/n8n-builder/tests/setup-251-v2-workers.sh                  n8n-test:2.1.0     n8n-runners-test-default:2.1.0;
+/root/n8n-builder/tests/setup-251-v2-workers.sh                  n8n-private:2.1.0  n8n-runners-private-default:2.1.0;
+
+
+
+
+
+
+```
+
+## Aumentar performance e paralelismo
+
+```
+
+# Palavra chave: CONCURRENCY, concurrency
+
+# Limite de execucoes por runner:
+N8N_RUNNERS_MAX_CONCURRENCY default 10
+
+```
+
+
