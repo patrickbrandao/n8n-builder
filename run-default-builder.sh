@@ -4,8 +4,12 @@
 # - Definir versao do N8N  
 
     # Obter versao atual em https://github.com/n8n-io/n8n/releases
-    #export N8N_VERSION="1.122.5"; echo "$N8N_VERSION" > /tmp/.n8n-version;
+    #export N8N_VERSION="1.123.5"; echo "$N8N_VERSION" > /tmp/.n8n-version;
     #export N8N_VERSION="v2"; echo "$N8N_VERSION" > /tmp/.n8n-version;
+    #export N8N_VERSION="2.0.0"; echo "$N8N_VERSION" > /tmp/.n8n-version;
+    #export N8N_VERSION="2.0.1"; echo "$N8N_VERSION" > /tmp/.n8n-version;
+    #export N8N_VERSION="2.0.2"; echo "$N8N_VERSION" > /tmp/.n8n-version;
+    #export N8N_VERSION="2.1.0"; echo "$N8N_VERSION" > /tmp/.n8n-version;
 
     # Tipo de compilacao (separa versoes de teste, oficial e personalizadas)
     #export RELEASE="private"; echo "$RELEASE" > /tmp/.release;
@@ -14,7 +18,7 @@
 
     # Versao e release default
     [ -f "/tmp/.n8n-version" ] || {
-        export N8N_VERSION="1.122.5";
+        export N8N_VERSION="2.1.0";
         echo "$N8N_VERSION" > /tmp/.n8n-version;
         echo "# *** Definindo versao padrao: $N8N_VERSION";
     };
@@ -57,16 +61,30 @@
 
     # Alterar codigo para ajustes
     if [ "$RELEASE" = "private" ]; then
-        bash /root/n8n-builder/builder/243n8n-fix-spyware.sh;
+        bash /root/n8n-builder/builder/22-n8n-fix-pubsub.sh;
+        bash /root/n8n-builder/builder/23-n8n-fix-spyware.sh;
         bash /root/n8n-builder/builder/24-n8n-fix-patch.sh;
         bash /root/n8n-builder/builder/25-n8n-fix-env.sh;
         bash /root/n8n-builder/builder/26-n8n-fix-timezone.sh;
+        true;
+    elif [ "$RELEASE" = "test" ]; then
+        #bash /root/n8n-builder/builder/22-n8n-fix-pubsub.sh;
+        bash /root/n8n-builder/builder/23-n8n-fix-spyware.sh;
+        bash /root/n8n-builder/builder/24-n8n-fix-patch.sh;
+        #bash /root/n8n-builder/builder/25-n8n-fix-env.sh;
+        bash /root/n8n-builder/builder/26-n8n-fix-timezone.sh;
+        true;
     fi;
 
 # 5 - Personalizar estilo
     if [ "$RELEASE" = "private" ]; then
         bash /root/n8n-builder/builder/28-n8n-custom-icons.sh;
         bash /root/n8n-builder/builder/29-n8n-custom-scss.sh;
+        true;
+    elif [ "$RELEASE" = "test" ]; then
+        #bash /root/n8n-builder/builder/28-n8n-custom-icons.sh;
+        #bash /root/n8n-builder/builder/29-n8n-custom-scss.sh;
+        true;
     fi;
 
 # 6 - Rodar container para compilacao do codigo
@@ -76,7 +94,11 @@
 
     # rodar container para compilacao
     bash /root/n8n-builder/builder/32-n8nbase-run.sh;
+    bash /root/n8n-builder/builder/33-n8nbase-copy-scripts.sh;
     bash /root/n8n-builder/builder/34-n8nbase-prepare.sh;
+
+    # fazer bundle de todos os fontes juntos
+    # bash /root/n8n-builder/builder/38-n8n-export-bundle.sh;
 
     # gerar ./compiled/
     bash /root/n8n-builder/builder/40-n8n-build-compiled.sh;
