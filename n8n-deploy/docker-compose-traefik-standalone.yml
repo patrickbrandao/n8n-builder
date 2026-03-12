@@ -1,0 +1,70 @@
+networks:
+  network_public:
+    name: network_public
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: "br-net-public"
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.driver.mtu: "1500"
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.249.0.0/16
+          gateway: 10.249.255.254
+
+services:
+  traefik-app:
+    image: traefik:latest
+    container_name: traefik-app
+    hostname: traefik-app.intranet.br
+    restart: always
+    cpus: 4
+    mem_limit: 4g
+    memswap_limit: 4g
+    shm_size: 1g
+    read_only: true
+    tmpfs:
+      - /run:rw,noexec,nosuid,size=2m
+      - /tmp:rw,noexec,nosuid,size=2m
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /storage/traefik-app/letsencrypt:/etc/letsencrypt
+      - /storage/traefik-app/config:/etc/traefik
+      - /storage/traefik-app/logs:/logs
+    networks:
+      - network_public
+    command:
+      # Global
+      - "--global.checkNewVersion=false"
+      - "--global.sendAnonymousUsage=false"
+
+      # API / Dashboard (acesso inseguro - use apenas em ambiente controlado)
+      - "--api.insecure=true"
+
+      # Logs de erro
+      - "--log.level=INFO"
+      - "--log.filePath=/logs/error.log"
+
+      # Logs de acesso
+      - "--accessLog.filePath=/logs/access.log"
+
+      # Entrypoint HTTP (porta 80) com redirect automático para HTTPS
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
+
+      # Entrypoint HTTPS (porta 443)
+      - "--entrypoints.websecure.address=:443"
+
+      # Providers
+      - "--providers.docker=true"
+      - "--providers.file.directory=/etc/traefik"
+
+      # Certificados Let's Encrypt via HTTP Challenge
+      - "--certificatesresolvers.letsencrypt.acme.email=voce@seudominio.com.br"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"

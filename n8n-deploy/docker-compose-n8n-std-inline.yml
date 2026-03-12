@@ -1,0 +1,242 @@
+# ----------------------------------------- ENVs
+
+x-env-global: &env-global
+  GENERIC_TIMEZONE: America/Sao_Paulo
+  TZ: America/Sao_Paulo
+
+x-env-queue: &env-queue
+  EXECUTIONS_MODE: queue
+  EXECUTIONS_TIMEOUT: "1800"
+
+x-env-redis: &env-redis
+  QUEUE_BULL_REDIS_HOST: n8n-redis
+
+x-env-postgres: &env-postgres
+  DB_TYPE: postgresdb
+  DB_POSTGRESDB_HOST: n8n-pgsql
+  DB_POSTGRESDB_PASSWORD: tulipasql
+
+x-env-services: &env-services
+  N8N_ENCRYPTION_KEY: tulipa
+  NODE_ENV: production
+  N8N_DIAGNOSTICS_ENABLED: "false"
+  N8N_USER_FOLDER: /data
+  N8N_METRICS: "true"
+
+x-env-core: &env-core
+  N8N_RUNNERS_MODE: external
+  EXECUTIONS_DATA_SAVE_ON_PROGRESS: "true"
+  EXECUTIONS_DATA_SAVE_ON_SUCCESS: all
+
+x-env-editor: &env-editor
+  N8N_EDITOR_BASE_URL: https://n8n.seudominio.com.br/
+  N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+  N8N_VERSION_NOTIFICATIONS_WHATS_NEW_ENABLED: "false"
+  N8N_PUBLIC_API_SWAGGERUI_DISABLED: "true"
+  OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: "true"
+
+x-env-web: &env-web
+  WEBHOOK_URL: https://ws.seudominio.com.br/
+  N8N_HOST: n8n.seudominio.com.br
+  N8N_PROTOCOL: https
+  N8N_PROXY_HOPS: "1"
+
+x-env-tasks: &env-tasks
+  N8N_RUNNERS_AUTH_TOKEN: tulipa
+
+x-env-worker: &env-worker
+  N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 0.0.0.0
+  N8N_RUNNERS_ENABLED: "true"
+
+x-env-runner: &env-runner
+  N8N_RUNNERS_TASK_BROKER_URI: http://n8n-worker:5679
+
+
+# ----------------------------------------- Shared Sets
+
+x-n8n-common: &n8n-common
+  image: docker.n8n.io/n8nio/n8n:2.11.3
+  restart: always
+  cpus: 4
+  mem_limit: 4g
+  memswap_limit: 4g
+  shm_size: 1g
+  tmpfs:
+    - /run:rw,noexec,nosuid,size=512m
+    - /tmp:rw,noexec,nosuid,size=512m
+  networks:
+    - network_public
+
+
+# ----------------------------------------- Deploy
+
+networks:
+  network_public:
+    external: true
+
+services:
+
+  # ----------------------------------------- PostgreSQL
+
+  n8n-pgsql:
+    image: pgvector/pgvector:pg18-trixie
+    container_name: n8n-pgsql
+    hostname: n8n-pgsql.intranet.br
+    restart: always
+    read_only: true
+    cpus: "2.0"
+    mem_limit: 2g
+    memswap_limit: 2g
+    shm_size: 1g
+    networks:
+      - network_public
+    tmpfs:
+      - /run:rw,noexec,nosuid,size=128m
+      - /tmp:rw,noexec,nosuid,size=128m
+    volumes:
+      - /storage/n8n-pgsql:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tulipasql
+      POSTGRES_DB: n8n
+      PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    entrypoint: ["docker-entrypoint.sh"]
+    command:
+      - postgres
+      - --max_connections=8192
+      - --wal_level=minimal
+      - --max_wal_senders=0
+      - --port=5432
+
+  # ----------------------------------------- Redis
+
+  n8n-redis:
+    image: redis:latest
+    container_name: n8n-redis
+    hostname: n8n-redis.intranet.br
+    restart: always
+    read_only: true
+    cpus: "1.0"
+    mem_limit: 1g
+    memswap_limit: 1g
+    working_dir: /data
+    networks:
+      - network_public
+    volumes:
+      - /storage/n8n-redis:/data
+    command: >
+      redis-server
+        --tcp-backlog 8192
+        --tcp-keepalive 30
+        --timeout 0
+        --dir /data
+        --save 16 1
+        --save 12 10
+        --save 6 100
+        --rdbcompression no
+        --appendonly yes
+        --appendfsync everysec
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
+  # ----------------------------------------- N8N Editor
+  #   env: global + queue + redis + postgres + services
+  #      + editor + web + core + tasks
+
+  n8n-editor:
+    <<: *n8n-common
+    container_name: n8n-editor
+    hostname: n8n-editor.intranet.br
+    depends_on:
+      n8n-pgsql:
+        condition: service_healthy
+      n8n-redis:
+        condition: service_healthy
+    environment:
+      <<: [*env-global, *env-queue, *env-redis, *env-postgres,
+           *env-services, *env-editor, *env-web, *env-core, *env-tasks]
+    volumes:
+      - /storage/n8n-app/editor:/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.n8n-editor.rule: "Host(`n8n.seudominio.com.br`)"
+      traefik.http.routers.n8n-editor.entrypoints: "web,websecure"
+      traefik.http.routers.n8n-editor.tls: "true"
+      traefik.http.routers.n8n-editor.tls.certresolver: "letsencrypt"
+      traefik.http.services.n8n-editor.loadbalancer.server.port: "5678"
+
+  # ----------------------------------------- N8N Webhook
+  #   env: global + queue + redis + postgres + services + web
+
+  n8n-webhook:
+    <<: *n8n-common
+    container_name: n8n-webhook
+    hostname: n8n-webhook.intranet.br
+    command: webhook
+    depends_on:
+      n8n-pgsql:
+        condition: service_healthy
+      n8n-redis:
+        condition: service_healthy
+    environment:
+      <<: [*env-global, *env-queue, *env-redis, *env-postgres,
+           *env-services, *env-web]
+    volumes:
+      - /storage/n8n-app/webhook:/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.n8n-webhook.rule: "Host(`ws.seudominio.com.br`)"
+      traefik.http.routers.n8n-webhook.entrypoints: "web,websecure"
+      traefik.http.routers.n8n-webhook.tls: "true"
+      traefik.http.routers.n8n-webhook.tls.certresolver: "letsencrypt"
+      traefik.http.services.n8n-webhook.loadbalancer.server.port: "5678"
+
+  # ----------------------------------------- N8N Worker
+  #   env: global + queue + redis + postgres + services
+  #      + core + worker + tasks
+
+  n8n-worker:
+    <<: *n8n-common
+    container_name: n8n-worker
+    hostname: n8n-worker.intranet.br
+    command: worker
+    depends_on:
+      n8n-pgsql:
+        condition: service_healthy
+      n8n-redis:
+        condition: service_healthy
+    environment:
+      <<: [*env-global, *env-queue, *env-redis, *env-postgres,
+           *env-services, *env-core, *env-worker, *env-tasks]
+    volumes:
+      - /storage/n8n-app/worker:/data
+
+  # ----------------------------------------- N8N Task Runner
+  #   env: global + runner + tasks
+
+  n8n-runner:
+    image: n8nio/runners:2.11.3
+    container_name: n8n-runner
+    hostname: n8n-runner.intranet.br
+    restart: always
+    cpus: 4
+    mem_limit: 4g
+    memswap_limit: 4g
+    shm_size: 1g
+    tmpfs:
+      - /run:rw,noexec,nosuid,size=512m
+      - /tmp:rw,noexec,nosuid,size=512m
+    networks:
+      - network_public
+    environment:
+      <<: [*env-global, *env-runner, *env-tasks]
+    volumes:
+      - /storage/n8n-app/runner:/data
