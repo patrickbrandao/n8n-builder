@@ -52,6 +52,7 @@ QUEUE_BULL_REDIS_HOST=n8n-redis
 
 ```env
 N8N_RUNNERS_TASK_BROKER_URI=http://n8n-worker:5679
+N8N_RUNNERS_MAX_CONCURRENCY=128=128
 ```
 
 ### /root/n8n-deploy/.env-n8n-services
